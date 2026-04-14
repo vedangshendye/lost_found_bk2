@@ -14,7 +14,7 @@ itemRouter.post('/',upload.single("image"),itemvalidator,authorize,check,uploadi
 itemRouter.post('/foundit/:item',authorize,check,found);
 itemRouter.post('/claimit/:item',authorize,check,claim);
 itemRouter.post('/claim',authorize,check,claim2);
-router.put('/claims/:id/status', async (req, res) => {
+itemRouter.put('/claims/:id/status', async (req, res) => {
   try {
     const { status } = req.body; // 'approved' or 'rejected'
 
@@ -49,7 +49,7 @@ router.put('/claims/:id/status', async (req, res) => {
   }
 });
 
-router.get('/claims/item/:itemId', async (req, res) => {
+itemRouter.get('/claims/item/:itemId', async (req, res) => {
   try {
     const result = await pool.query(
       "SELECT * FROM claims WHERE item_id = $1",
