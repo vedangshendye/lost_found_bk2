@@ -8,6 +8,7 @@ const {uploaditem,getallitems}=require('./item.js');
 const {found,claim}=require('./claimfound.js');
 
 itemRouter.get('/',getallitems);
+itemRouter.get('/search?q=wallet&location=mumbai')
 itemRouter.post('/',upload.single("image"),itemvalidator,authorize,check,uploaditem)
 itemRouter.post('/foundit/:item',authorize,check,found);
 itemRouter.post('/claimit/:item',authorize,check,claim);

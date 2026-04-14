@@ -24,12 +24,13 @@ async function additemdb(name,description,image_url,finder_id,owner_id,wherelost
     }
 }
 
-async function getallitemsdb(type, category) {
+async function getallitemsdb(type, category, limit, offset, q) {
     try {
         let query = "SELECT * FROM items";
         let conditions = [];
         let values = [];
 
+        // 🔽 EXISTING FILTERS (unchanged logic)
         if (type) {
             values.push(type);
             conditions.push(`type = $${values.length}`);
@@ -39,11 +40,31 @@ async function getallitemsdb(type, category) {
             values.push(category);
             conditions.push(`category = $${values.length}`);
         }
+
+        // 🔽 NEW: SEARCH (minimal addition)
+        if (q) {
+            values.push(`%${q}%`);
+            conditions.push(`(title ILIKE $${values.length} OR description ILIKE $${values.length})`);
+        }
+
+        // 🔽 WHERE (same as before)
         if (conditions.length > 0) {
             query += " WHERE " + conditions.join(" AND ");
         }
 
+        // 🔽 ORDER (same)
         query += " ORDER BY created_at DESC";
+
+        // 🔽 FIXED: LIMIT & OFFSET (moved here)
+        if (limit !== undefined) {
+            values.push(limit);
+            query += ` LIMIT $${values.length}`;
+        }
+
+        if (offset !== undefined) {
+            values.push(offset);
+            query += ` OFFSET $${values.length}`;
+        }
 
         const result = await pool.query(query, values);
         return result.rows;

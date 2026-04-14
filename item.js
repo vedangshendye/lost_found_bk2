@@ -64,16 +64,25 @@ async function uploaditem(req,res){
 }
 
 async function getallitems(req, res) {
+
     try {
-        const { type,category } = req.query;   // ?type=lost
-        const items = await getallitemsdb(type,category);
-        return res.status(200).json({message: "success in getting all items",items: items || []});
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            message: "internal server error"
-        });
-    }
+    const { type, category, q } = req.query;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const items = await getallitemsdb(type, category, limit, offset, q);
+
+    res.json({
+      success: true,
+      page,
+      items
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
 
 module.exports={uploaditem,getallitems}
