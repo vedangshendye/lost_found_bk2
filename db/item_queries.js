@@ -26,6 +26,7 @@ async function additemdb(name,description,image_url,finder_id,owner_id,wherelost
 async function getItemsCount(type, category, q) {
     let query = "SELECT COUNT(*) FROM items";
     let conditions = [];
+    conditions.push(`is_active = true`);
     let values = [];
 
     if (type) {

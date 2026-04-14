@@ -63,6 +63,16 @@ create table tempuser(
 );
 insert into users(mis,username,password,emailid) values('123456','vedang','password','vedangs84@gmail.com');
 
+CREATE TABLE claims(
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    item_id INT,
+    status VARCHAR(10) DEFAULT 'pending',
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY(item_id) REFERENCES items(id) ON DELETE CASCADE
+);
 `
 async function seed_db() {
     try{

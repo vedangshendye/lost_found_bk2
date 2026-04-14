@@ -34,6 +34,56 @@ async function claim(req,res){
     }
 }
 
+async function  claim2(req,res){
+    try {
+    const { user_id, item_id } = req.body;
+
+    // ✅ PREVENT duplicate claims
+    const existing = await pool.query(
+      "SELECT * FROM claims WHERE user_id = $1 AND item_id = $2",
+      [user_id, item_id]
+    );
+
+    if (existing.rows.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: "You already claimed this item"
+      });
+    }
+
+    // ✅ INSERT with default status = pending
+    const result = await pool.query(
+      "INSERT INTO claims(user_id, item_id) VALUES($1,$2) RETURNING *",
+      [user_id, item_id]
+    );
+
+    res.json({
+      success: true,
+      message: "Claim request sent",
+      claim: result.rows[0]
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+async function getclaims(req,res){
+    try {
+    const result = await pool.query(
+      "SELECT * FROM claims WHERE user_id = $1 ORDER BY created_at DESC",
+      [req.params.userId]
+    );
+
+    res.json({
+      success: true,
+      claims: result.rows
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 //a mail needs to be sent to the owner which must contain finder info
 async function found(req,res){
     console.log("found function entered")
@@ -85,4 +135,4 @@ async function sendEmail(message,reciever,title){
     console.log(info);
     return;
 }
-module.exports={claim,found,sendEmail}
+module.exports={claim,found,sendEmail,claim2}

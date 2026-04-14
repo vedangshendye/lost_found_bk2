@@ -64,19 +64,26 @@ async function uploaditem(req,res){
 }
 
 async function getallitems(req, res) {
-
-    try {
+try {
     const { type, category, q } = req.query;
 
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+
+    // ✅ LIMIT PROTECTION (IMPORTANT)
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+
     const offset = (page - 1) * limit;
 
     const items = await getallitemsdb(type, category, limit, offset, q);
 
+    // ✅ NEW: total count
+    const total = await getItemsCount(type, category, q);
+
     res.json({
       success: true,
       page,
+      total,
+      totalPages: Math.ceil(total / limit),
       items
     });
 
