@@ -28,12 +28,13 @@ CREATE TABLE users (
     emailid VARCHAR(100) NOT NULL,
     role varchar(20) not null default 'user' check (role in ('user','admin')),
     acts_today INT DEFAULT 0 CHECK (acts_today >= 0),
+    contact_info text,
     lastact TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 create table items(
     id serial primary key,
-    name varchar(30) not null,
+    name varchar(100) not null,
     description text,
     image_url text,
     finder_id int default null,
@@ -44,10 +45,13 @@ create table items(
     type varchar(10) not null check (type in ('lost','found')),
     status varchar(10) not null default 'open' check (status in ('claimed','open','closed','matched')),
     reported_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-
+    is_active boolean default true,
     foreign key(finder_id) references users(id) on delete set null,
     foreign key(owner_id) references users(id) on delete set null
 );
+CREATE INDEX idx_items_type ON items(type);
+CREATE INDEX idx_items_category ON items(category);
+CREATE INDEX idx_items_created ON items(reported_at DESC);
 create table tempuser(
     mis varchar(20),
     username varchar(30),

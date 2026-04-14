@@ -44,7 +44,7 @@ async function getallitemsdb(type, category, limit, offset, q) {
         // 🔽 NEW: SEARCH (minimal addition)
         if (q) {
             values.push(`%${q}%`);
-            conditions.push(`(title ILIKE $${values.length} OR description ILIKE $${values.length})`);
+            conditions.push(`(name ILIKE $${values.length} OR description ILIKE $${values.length})`);
         }
 
         // 🔽 WHERE (same as before)
