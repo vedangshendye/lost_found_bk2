@@ -23,6 +23,33 @@ async function additemdb(name,description,image_url,finder_id,owner_id,wherelost
         return null;
     }
 }
+async function getItemsCount(type, category, q) {
+    let query = "SELECT COUNT(*) FROM items";
+    let conditions = [];
+    let values = [];
+
+    if (type) {
+        values.push(type);
+        conditions.push(`type = $${values.length}`);
+    }
+
+    if (category) {
+        values.push(category);
+        conditions.push(`category = $${values.length}`);
+    }
+
+    if (q) {
+        values.push(`%${q}%`);
+        conditions.push(`(name ILIKE $${values.length} OR description ILIKE $${values.length})`);
+    }
+
+    if (conditions.length > 0) {
+        query += " WHERE " + conditions.join(" AND ");
+    }
+
+    const result = await pool.query(query, values);
+    return parseInt(result.rows[0].count);
+}
 
 async function getallitemsdb(type, category, limit, offset, q) {
     try {
@@ -75,5 +102,5 @@ async function getallitemsdb(type, category, limit, offset, q) {
     }
 }
 module.exports={
-    getallitemsdb,additemdb
+    getallitemsdb,additemdb,getItemsCount
 }
