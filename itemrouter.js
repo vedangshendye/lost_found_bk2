@@ -7,7 +7,7 @@ const {check}=require('./middlewares/check_acts.js');
 const {uploaditem,getallitems}=require('./item.js');
 const {found,claim,claim2}=require('./claimfound.js');
 
-itemRouter.get('/items',getallitems);
+itemRouter.get('/',getallitems);
 itemRouter.get('/search?q=wallet&location=mumbai')
 itemRouter.get('/claims/:userId',)
 itemRouter.post('/',upload.single("image"),itemvalidator,authorize,check,uploaditem)

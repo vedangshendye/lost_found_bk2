@@ -81,7 +81,7 @@ async function getallitemsdb(type, category, limit, offset, q) {
         }
 
         // 🔽 ORDER (same)
-        query += " ORDER BY created_at DESC";
+        query += " ORDER BY reported_at DESC";
 
         // 🔽 FIXED: LIMIT & OFFSET (moved here)
         if (limit !== undefined) {

@@ -2,7 +2,7 @@
 const cloudinary = require("./middlewares/cloudinary");
 const streamifier = require("streamifier");
 const jwt=require('jsonwebtoken');
-const {additemdb,getallitemsdb}=require('./db/item_queries.js')
+const {additemdb,getallitemsdb,getItemsCount}=require('./db/item_queries.js')
 
 async function uploaditem(req,res){
     if(!req.file){
@@ -65,6 +65,7 @@ async function uploaditem(req,res){
 
 async function getallitems(req, res) {
 try {
+    console.log("getallitems function entered\n");
     const { type, category, q } = req.query;
 
     const page = parseInt(req.query.page) || 1;
