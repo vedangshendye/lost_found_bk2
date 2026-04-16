@@ -3,6 +3,7 @@ const cloudinary = require("./middlewares/cloudinary");
 const streamifier = require("streamifier");
 const jwt=require('jsonwebtoken');
 const {additemdb,getallitemsdb,getItemsCount}=require('./db/item_queries.js')
+const {pool}=require("./db/queries.js");
 
 async function uploaditem(req,res){
     if(!req.file){
@@ -92,5 +93,56 @@ try {
     res.status(500).json({ error: err.message });
   }
 }
+const getUserClaims = async (req, res) => {
+  try {
+    const { userId } = req.params;
 
-module.exports={uploaditem,getallitems}
+    const result = await pool.query(
+      "SELECT * FROM claims WHERE user_id = $1",
+      [userId]
+    );
+
+    return res.status(200).json({
+      success: true,
+      claims: result.rows
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+const searchItems = async (req, res) => {
+  try {
+    const { q, location } = req.query;
+
+    let query = "SELECT * FROM items WHERE 1=1";
+    let values = [];
+    let index = 1;
+
+    if (q) {
+      query += ` AND (name ILIKE $${index} OR description ILIKE $${index})`;
+      values.push(`%${q}%`);
+      index++;
+    }
+
+    if (location) {
+      query += ` AND wherelost ILIKE $${index}`;
+      values.push(`%${location}%`);
+      index++;
+    }
+
+    const result = await pool.query(query, values);
+
+    return res.status(200).json({
+      success: true,
+      items: result.rows
+    });
+
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({ message: err.message });
+  }
+};
+module.exports={uploaditem,getallitems,getUserClaims,searchItems}

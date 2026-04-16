@@ -108,4 +108,4 @@ async function delete_userdb(userid){
     }
 }
 module.exports={founddb,claimdb,get_owner_email,get_finder_email,reset_count,
-    last_update,delete_itemdb,delete_userdb}
+    last_update,delete_itemdb,delete_userdb,pool}

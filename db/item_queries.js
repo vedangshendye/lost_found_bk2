@@ -61,12 +61,12 @@ async function getallitemsdb(type, category, limit, offset, q) {
         // 🔽 EXISTING FILTERS (unchanged logic)
         if (type) {
             values.push(type);
-            conditions.push(`type = $${values.length}`);
+            conditions.push(`LOWER(type) = LOWER($${values.length})`);
         }
 
         if (category) {
             values.push(category);
-            conditions.push(`category = $${values.length}`);
+            conditions.push(`LOWER(category) = LOWER($${values.length})`);
         }
 
         // 🔽 NEW: SEARCH (minimal addition)
