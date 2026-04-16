@@ -2,7 +2,7 @@
 const cloudinary = require("./middlewares/cloudinary");
 const streamifier = require("streamifier");
 const jwt=require('jsonwebtoken');
-const {additemdb,getallitemsdb}=require('./db/item_queries.js')
+const {additemdb,getallitemsdb,getItemsCount}=require('./db/item_queries.js')
 
 async function uploaditem(req,res){
     if(!req.file){
@@ -64,16 +64,33 @@ async function uploaditem(req,res){
 }
 
 async function getallitems(req, res) {
-    try {
-        const { type,category } = req.query;   // ?type=lost
-        const items = await getallitemsdb(type,category);
-        return res.status(200).json({message: "success in getting all items",items: items || []});
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({
-            message: "internal server error"
-        });
-    }
+try {
+    console.log("getallitems function entered\n");
+    const { type, category, q } = req.query;
+
+    const page = parseInt(req.query.page) || 1;
+
+    // ✅ LIMIT PROTECTION (IMPORTANT)
+    const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+
+    const offset = (page - 1) * limit;
+
+    const items = await getallitemsdb(type, category, limit, offset, q);
+
+    // ✅ NEW: total count
+    const total = await getItemsCount(type, category, q);
+
+    res.json({
+      success: true,
+      page,
+      total,
+      totalPages: Math.ceil(total / limit),
+      items
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 }
 
 module.exports={uploaditem,getallitems}
