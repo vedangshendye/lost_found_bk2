@@ -19,7 +19,9 @@ async function uploaditem(req,res){
     //obtaining item info from form
     let {name,description,whenlost,location,status,category,type}=req.body;
     let id=req.user.id;
-    
+    if (!whenlost) {
+    return res.status(400).json({ message: "Date is required" });
+    }
     
     try{
         function uploadFromBuffer(){
