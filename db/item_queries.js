@@ -8,12 +8,12 @@ password: 'Incorrect@47',
 port: 5432,
 })
 
-async function additemdb(name,description,image_url,finder_id,owner_id,wherelost,whenlost,category,type){
+async function additemdb(name,description,image_url,finder_id,owner_id,location,whenlost,category,type){
     try{
         if(finder_id){await pool.query("update users set acts_today=acts_today+1,lastact=CURRENT_TIMESTAMP where id=$1",[finder_id])}
         if(owner_id){await pool.query("update  users set acts_today=acts_today+1,lastact=CURRENT_TIMESTAMP where id=$1",[owner_id])}
         const item=await pool.query(`insert into items(name,description,image_url,finder_id,owner_id,location,whenlost,category,type)
-            values($1,$2,$3,$4,$5,$6,$7,$8,$9) returning *;`,[name,description,image_url,finder_id,owner_id,wherelost,whenlost,category,type]);
+            values($1,$2,$3,$4,$5,$6,$7,$8,$9) returning *;`,[name,description,image_url,finder_id,owner_id,location,whenlost,category,type]);
         console.log("item inserted in db successfully!");
         return item.rows[0];
     }

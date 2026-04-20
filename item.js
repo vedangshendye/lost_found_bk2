@@ -17,7 +17,7 @@ async function uploaditem(req,res){
         })
     }
     //obtaining item info from form
-    let {name,description,whenlost,wherelost,status,category,type}=req.body;
+    let {name,description,whenlost,location,status,category,type}=req.body;
     let id=req.user.id;
     
     
@@ -44,11 +44,11 @@ async function uploaditem(req,res){
     let resu;
     if(type=='lost'){
         console.log("the type was lost\n");
-        resu=await additemdb(name,description,result.secure_url,null,id,wherelost,whenlost,category,type);
+        resu=await additemdb(name,description,result.secure_url,null,id,location,whenlost,category,type);
     }
     else{
         console.log("The type was not lost. It was:",type,"\n");
-        resu=await additemdb(name,description,result.secure_url,id,null,wherelost,whenlost,category,type);
+        resu=await additemdb(name,description,result.secure_url,id,null,location,whenlost,category,type);
     }
     req.user.acts_today+=1;
     return res.status(200).json({
@@ -128,7 +128,7 @@ const searchItems = async (req, res) => {
     }
 
     if (location) {
-      query += ` AND wherelost ILIKE $${index}`;
+      query += ` AND location ILIKE $${index}`;
       values.push(`%${location}%`);
       index++;
     }
